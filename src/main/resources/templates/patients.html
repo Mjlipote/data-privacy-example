@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<title>Patient List</title>
+<th:block th:include="head :: bootstrap" />
+</head>
+<body>
+
+	<h1 class="text-center">Patient List</h1>
+
+	<div class="container col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<form class=" col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12"
+			method="get" th:action="@{/patients/lookup}" role="form">
+
+			<div class="form-group col-lg-8 col-md-8 col-sm-8 col-xs-8">
+				<input size="100" class="form-control" type="text" name="ssid"
+					placeholder="SSID"></input>
+			</div>
+
+			<div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-4">
+				<input class="btn btn-inverse btn-block btn-md" type="submit"
+					value="搜尋"></input>
+			</div>
+		</form>
+
+		<form class=" col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12"
+			method="post" th:action="@{/patients}" role="form">
+
+			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+				<input class="form-control" type="text" name="ssid"
+					placeholder="SSID"></input>
+			</div>
+
+			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+				<input class="form-control" type="text" name="name"
+					placeholder="Name"></input>
+			</div>
+
+			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+				<input class="form-control" type="text" name="gender"
+					placeholder="Gender"></input>
+			</div>
+
+			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+				<input class="form-control" type="number" name="zipcode"
+					placeholder="Zipcode"></input>
+			</div>
+
+			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+				<input class="form-control" type="number" name="age"
+					placeholder="Age"></input>
+			</div>
+
+			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+				<input class="form-control" type="text" name="disease"
+					placeholder="Disease"></input>
+			</div>
+
+			<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-6">
+				<input class="btn btn-inverse btn-block btn-md" type="submit"
+					value="新增"></input>
+			</div>
+		</form>
+	</div>
+
+	<div th:if="${patients}">
+		<table
+			class="table table-responsive table-bordered table-striped table-condensed table-hover">
+			<thead>
+				<tr>
+					<td>##</td>
+					<td><strong>身分證號</strong></td>
+					<td><strong>姓名</strong></td>
+					<td><strong>性別</strong></td>
+					<td><strong>區號</strong></td>
+					<td><strong>年齡</strong></td>
+					<td><strong>疾病名稱</strong></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="patient, iterationStatus: ${patients}">
+					<td th:text="${iterationStatus.count}"></td>
+					<td th:text="${patient.ssid}"></td>
+					<td th:text="${patient.name}"></td>
+					<td th:text="${patient.gender}"></td>
+					<td th:text="${patient.zipcode}"></td>
+					<td th:text="${patient.age}"></td>
+					<td th:text="${patient.disease}"></td>
+					<td>
+						<form method="get" th:action="@{${'/patients/' + patient.ssid }}">
+							<button type="submit" class="btn btn-block btn-sm btn-info">
+								<i class='glyphicon glyphicon-pencil' th:text="修訂疾病"></i>
+							</button>
+						</form>
+					</td>
+					<td>
+						<form method="post" th:action="@{${'/patients/' + patient.ssid }}">
+							<input type="hidden" name="_method" value="DELETE" />
+							<button type="submit" class="btn btn-block btn-sm btn-danger">
+								<i class='glyphicon glyphicon-trash' th:text="刪除"></i>
+							</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div th:unless="${patients}"
+		class="text-center col-lg-12 col-md-12 col-sm-12 col-xs-12">Patient
+		not found.</div>
+
+	<h2 th:if="${errorMessage}"
+		class="text-center col-lg-12 col-md-12 col-sm-12 col-xs-12"
+		th:text="${errorMessage}"></h2>
+
+</body>
+</html>
