@@ -20,6 +20,10 @@
  */
 package tw.edu.ym.lab525.entity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -38,14 +42,14 @@ public class Patient extends AbstractPersistable<Long>
   public Patient() {}
 
   public Patient(String ssid, String name, String gender, String disease,
-      Integer zipcode, Integer age) {
+      String birthday, String nationality) {
     this.ssid = ssid;
     this.name = name;
     this.gender = gender;
     this.disease = disease;
-    this.zipcode = zipcode;
-    this.age = age;
-
+    this.birthday = birthday;
+    this.age = getCurrentYear() - Integer.valueOf(birthday.split("/")[0]) + 1;
+    this.nationality = nationality;
   }
 
   @Column(unique = true, nullable = false)
@@ -61,10 +65,13 @@ public class Patient extends AbstractPersistable<Long>
   private String disease;
 
   @Column(nullable = false)
-  private Integer zipcode;
+  private String birthday;
 
   @Column(nullable = false)
   private Integer age;
+
+  @Column(nullable = false)
+  private String nationality;
 
   /**
    * @return the ssid
@@ -127,18 +134,18 @@ public class Patient extends AbstractPersistable<Long>
   }
 
   /**
-   * @return the zipcode
+   * @return the birthday
    */
-  public Integer getZipcode() {
-    return zipcode;
+  public String getBirthday() {
+    return birthday;
   }
 
   /**
-   * @param zipcode
-   *          the zipcode to set
+   * @param birthday
+   *          the birthday to set
    */
-  public void setZipcode(Integer zipcode) {
-    this.zipcode = zipcode;
+  public void setBirthday(String birthday) {
+    this.birthday = birthday;
   }
 
   /**
@@ -156,12 +163,34 @@ public class Patient extends AbstractPersistable<Long>
     this.age = age;
   }
 
+  /**
+   * @return the nationality
+   */
+  public String getNationality() {
+    return nationality;
+  }
+
+  /**
+   * @param nationality
+   *          the nationality to set
+   */
+  public void setNationality(String nationality) {
+    this.nationality = nationality;
+  }
+
+  private Integer getCurrentYear() {
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    Calendar cal = Calendar.getInstance();
+    return Integer.valueOf((dateFormat.format(cal.getTime()).split("/")[0]));
+  }
+
   @Override
   public int compareTo(final Patient other) {
     return ComparisonChain.start().compare(ssid, other.ssid)
         .compare(name, other.name).compare(gender, other.gender)
-        .compare(disease, other.disease).compare(zipcode, other.zipcode)
-        .compare(age, other.age).result();
+        .compare(disease, other.disease).compare(birthday, other.birthday)
+        .compare(age, other.age).compare(nationality, other.nationality)
+        .result();
   }
 
   @Override
@@ -174,20 +203,22 @@ public class Patient extends AbstractPersistable<Long>
         && Objects.equal(name, castOther.name)
         && Objects.equal(gender, castOther.gender)
         && Objects.equal(disease, castOther.disease)
-        && Objects.equal(zipcode, castOther.zipcode)
-        && Objects.equal(age, castOther.age);
+        && Objects.equal(birthday, castOther.birthday)
+        && Objects.equal(age, castOther.age)
+        && Objects.equal(nationality, castOther.nationality);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(ssid, name, gender, disease, zipcode, age);
+    return Objects.hashCode(ssid, name, gender, disease, birthday, age,
+        nationality);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("ssid", ssid).add("name", name)
-        .add("gender", gender).add("disease", disease).add("zipcode", zipcode)
-        .add("age", age).toString();
+        .add("gender", gender).add("disease", disease).add("zipcode", birthday)
+        .add("age", age).add("nationality", nationality).toString();
   }
 
 }

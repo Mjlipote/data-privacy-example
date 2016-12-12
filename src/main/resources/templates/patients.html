@@ -5,6 +5,22 @@
 <meta charset="UTF-8"></meta>
 <title>Patient List</title>
 <th:block th:include="head :: bootstrap" />
+<script type="text/javascript">
+	$(function() {
+		$('input[name="birthday"]').daterangepicker({
+			locale : {
+				format : 'YYYY/MM/DD'
+			},
+			startDate : '2016/01/01',
+			endDate : '2016/12/31',
+			minDate : '1910/01/01',
+			maxDate : '2100/12/31',
+			autoApply : true,
+			singleDatePicker : true,
+			showDropdowns : true
+		});
+	});
+</script>
 </head>
 <body>
 
@@ -14,12 +30,12 @@
 		<form class=" col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12"
 			method="get" th:action="@{/patients/lookup}" role="form">
 
-			<div class="form-group col-lg-8 col-md-8 col-sm-8 col-xs-8">
+			<div class="form-group col-lg-9 col-md-9 col-sm-9 col-xs-9">
 				<input size="100" class="form-control" type="text" name="ssid"
 					placeholder="SSID"></input>
 			</div>
 
-			<div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-4">
+			<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3">
 				<input class="btn btn-inverse btn-block btn-md" type="submit"
 					value="搜尋"></input>
 			</div>
@@ -28,9 +44,10 @@
 		<form class=" col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12"
 			method="post" th:action="@{/patients}" role="form">
 
-			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
-				<input class="form-control" type="text" name="ssid"
-					placeholder="SSID"></input>
+			<div class="form-group col-lg-2 col-md-2 col-sm-2 col-xs-2">
+				<input class="form-control"
+					onkeyup="value=value.replace(/[^-_a-zA-Z0-9]/g,'')" type="text"
+					name="ssid" placeholder="SSID"></input>
 			</div>
 
 			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
@@ -39,26 +56,47 @@
 			</div>
 
 			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
-				<input class="form-control" type="text" name="gender"
-					placeholder="Gender"></input>
+				<select data-toggle="select"
+					class="form-control select select-primary mrs mbm" name="gender">
+					<option value="M">男</option>
+					<option value="F">女</option>
+				</select>
 			</div>
 
 			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
-				<input class="form-control" type="number" name="zipcode"
-					placeholder="Zipcode"></input>
+				<select data-toggle="select"
+					class="form-control select select-primary mrs mbm"
+					name="nationality">
+					<option value="TAIWAN">TAIWAN</option>
+					<option value="JAPAN">JAPAN</option>
+					<option value="KOREA">KOREA</option>
+					<option value="CHINA">CHINA</option>
+					<option value="USA">USA</option>
+					<option value="CANADA">CANADA</option>
+					<option value="MEXICO">MEXICO</option>
+					<option value="BRASIL">BRASIL</option>
+					<option value="UK">UK</option>
+					<option value="FRANCE">FRANCE</option>
+					<option value="GERMANY">GERMANY</option>
+					<option value="ITALY">ITALY</option>
+					<option value="ITALY">OTHER</option>
+				</select>
 			</div>
 
-			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
-				<input class="form-control" type="number" name="age"
-					placeholder="Age"></input>
+			<div
+				class="form-group col-lg-2 col-md-2 col-sm-2 col-xs-2 date ui-datepicker">
+				<div class="input-group">
+					<input type="text" class="form-control" name="birthday" /><span
+						class="input-group-addon"><i class="fa fa-calendar"></i></span>
+				</div>
 			</div>
 
-			<div class="form-group col-lg-1 col-md-1 col-sm-1 col-xs-1">
+			<div class="form-group col-lg-2 col-md-2 col-sm-2 col-xs-2">
 				<input class="form-control" type="text" name="disease"
 					placeholder="Disease"></input>
 			</div>
 
-			<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-6">
+			<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3">
 				<input class="btn btn-inverse btn-block btn-md" type="submit"
 					value="新增"></input>
 			</div>
@@ -74,7 +112,8 @@
 					<td><strong>身分證號</strong></td>
 					<td><strong>姓名</strong></td>
 					<td><strong>性別</strong></td>
-					<td><strong>區號</strong></td>
+					<td><strong>國籍</strong></td>
+					<td><strong>生日</strong></td>
 					<td><strong>年齡</strong></td>
 					<td><strong>疾病名稱</strong></td>
 					<td></td>
@@ -87,7 +126,8 @@
 					<td th:text="${patient.ssid}"></td>
 					<td th:text="${patient.name}"></td>
 					<td th:text="${patient.gender}"></td>
-					<td th:text="${patient.zipcode}"></td>
+					<td th:text="${patient.nationality}"></td>
+					<td th:text="${patient.birthday}"></td>
 					<td th:text="${patient.age}"></td>
 					<td th:text="${patient.disease}"></td>
 					<td>

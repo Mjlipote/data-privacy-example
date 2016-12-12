@@ -32,7 +32,7 @@ public interface MainService {
   public List<Patient> lookup(String ssid);
 
   public void create(String ssid, String name, String gender, String disease,
-      Integer zipcode, Integer age);
+      String birthday, String nationality);
 
   public Patient read(String ssid);
 

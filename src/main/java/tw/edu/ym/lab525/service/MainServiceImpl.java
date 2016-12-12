@@ -46,14 +46,9 @@ public class MainServiceImpl implements MainService {
 
   @Override
   public void create(String ssid, String name, String gender, String disease,
-      Integer zipcode, Integer age) {
-    Patient patient = new Patient();
-    patient.setSsid(ssid);
-    patient.setName(name);
-    patient.setAge(age);
-    patient.setDisease(disease);
-    patient.setGender(gender);
-    patient.setZipcode(zipcode);
+      String birthday, String nationality) {
+    Patient patient =
+        new Patient(ssid, name, gender, disease, birthday, nationality);
     patientRepo.save(patient);
   }
 

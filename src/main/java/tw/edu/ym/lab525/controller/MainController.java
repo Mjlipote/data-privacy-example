@@ -64,27 +64,25 @@ public class MainController {
       @RequestParam(value = "name") String name,
       @RequestParam(value = "gender") String gender,
       @RequestParam(value = "disease") String disease,
-      @RequestParam(value = "zipcode") Integer zipcode,
-      @RequestParam(value = "age") Integer age) {
+      @RequestParam(value = "birthday") String birthday,
+      @RequestParam(value = "nationality") String nationality) {
 
     if (name.equals("") || ssid.equals("") || gender.equals("")
-        || disease.equals("") || zipcode == null || age == null) {
+        || disease.equals("") || birthday.equals("")) {
       map.addAttribute("errorMessage", "請勿輸入空值");
       return "patients";
     } else if (patientRepo.findBySsid(ssid) != null) {
       map.addAttribute("errorMessage", "身分證號重複");
       return "patients";
     } else {
-      mainService.create(ssid, name, gender, disease, zipcode, age);
+      mainService.create(ssid, name, gender, disease, birthday, nationality);
       return "redirect:/patients";
     }
   }
 
   @RequestMapping(value = "/{ssid}", method = RequestMethod.GET)
   public String read(ModelMap map, @PathVariable("ssid") String ssid) {
-
     map.addAttribute("patients", mainService.read(ssid));
-
     return "patient-info";
   }
 
