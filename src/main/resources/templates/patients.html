@@ -3,7 +3,7 @@
 	xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8"></meta>
-<title>Patient List</title>
+<title>病人列表</title>
 <th:block th:include="head :: bootstrap" />
 <script type="text/javascript">
 	$(function() {
@@ -20,11 +20,52 @@
 			showDropdowns : true
 		});
 	});
+
+	$(function() {
+		var items = $("table tbody tr");
+		var numItems = items.length;
+		var perPage = 10;
+		items.slice(perPage).hide();
+
+		$('.pages').pagination({
+
+			items : numItems,
+			itemsOnPage : perPage,
+			cssStyle : "light-theme",
+
+			onPageClick : function(pageNumber) {
+
+				var showFrom = perPage * (pageNumber - 1);
+				var showTo = showFrom + perPage;
+
+				items.hide() // first hide everything, then show for the new page
+				.slice(showFrom, showTo).show();
+			}
+		});
+		var checkFragment = function() {
+			// if there's no hash, make sure we go to page 1
+			var hash = window.location.hash || "#page-1";
+
+			// we'll use regex to check the hash string
+			hash = hash.match(/^#page-(\d+)$/);
+
+			if (hash)
+				// the selectPage function is described in the documentation
+				// we've captured the page number in a regex group: (\d+)
+				$('.pages').pagination("selectPage", parseInt(hash[1]));
+		};
+
+		// we'll call this function whenever the back/forward is pressed
+		$(window).bind("popstate", checkFragment);
+
+		// and we'll also call it to check right now!
+		checkFragment();
+	});
 </script>
 </head>
 <body>
 
-	<h1 class="text-center">Patient List</h1>
+	<h1 class="text-center">病人列表</h1>
 
 	<div class="container col-lg-12 col-md-12 col-sm-12 col-xs-12">
 		<form class=" col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12"
@@ -36,7 +77,7 @@
 			</div>
 
 			<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3">
-				<input class="btn btn-inverse btn-block btn-md" type="submit"
+				<input class="btn btn-primary btn-block btn-md" type="submit"
 					value="搜尋"></input>
 			</div>
 		</form>
@@ -79,7 +120,7 @@
 					<option value="FRANCE">FRANCE</option>
 					<option value="GERMANY">GERMANY</option>
 					<option value="ITALY">ITALY</option>
-					<option value="ITALY">OTHER</option>
+					<option value="OTHER">OTHER</option>
 				</select>
 			</div>
 
@@ -92,13 +133,43 @@
 			</div>
 
 			<div class="form-group col-lg-2 col-md-2 col-sm-2 col-xs-2">
-				<input class="form-control" type="text" name="disease"
-					placeholder="Disease"></input>
+				<select data-toggle="select"
+					class="form-control select select-primary mrs mbm" name="disease">
+					<option value="流感">流感</option>
+					<option value="肺炎">肺炎</option>
+					<option value="支氣管炎">支氣管炎</option>
+					<option value="肺水腫">肺水腫</option>
+					<option value="肺栓塞">肺栓塞</option>
+					<option value="胃潰瘍">胃潰瘍</option>
+					<option value="胃癌">胃癌</option>
+					<option value="胃炎">胃炎</option>
+					<option value="結腸炎">結腸炎</option>
+					<option value="結腸癌">結腸癌</option>
+				</select>
 			</div>
 
 			<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3">
-				<input class="btn btn-inverse btn-block btn-md" type="submit"
+				<input class="btn btn-primary btn-block btn-md" type="submit"
 					value="新增"></input>
+			</div>
+		</form>
+
+		<form class=" col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12"
+			method="post" th:action="@{/patients/download}" role="form">
+
+			<div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+				<input class="form-control" type="number" min="2" name="k"
+					placeholder="K 值"></input>
+			</div>
+
+			<div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-4">
+				<input class="form-control" type="number" min="2" name="l"
+					placeholder="L 值"></input>
+			</div>
+
+			<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3">
+				<input class="btn btn-success btn-block btn-md" type="submit"
+					value="下載去識別化資料"></input>
 			</div>
 		</form>
 	</div>
@@ -148,6 +219,9 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<div class="container pages"></div>
+
 	</div>
 
 	<div th:unless="${patients}"

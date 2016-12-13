@@ -20,6 +20,17 @@
  */
 package tw.edu.ym.lab525.controller;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.util.IOUtils;
+import org.deidentifier.arx.ARXResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -28,8 +39,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.github.wnameless.workbookaccessor.WorkbookWriter;
+
+import net.sf.rubycollect4j.RubyFile;
+import tw.edu.ym.lab525.arx.DataPrivacy;
 import tw.edu.ym.lab525.repository.PatientRepository;
 import tw.edu.ym.lab525.service.MainService;
+import tw.edu.ym.lab525.unit.TimeStamp;
 
 @RequestMapping("/patients")
 @Controller
@@ -97,6 +113,33 @@ public class MainController {
   public String delete(ModelMap map, @PathVariable("ssid") String ssid) {
     mainService.delete(ssid);
     return "redirect:/patients";
+  }
+
+  @RequestMapping(value = "/download", method = RequestMethod.POST)
+  public void download(HttpServletResponse response,
+      @RequestParam(value = "k") Integer k,
+      @RequestParam(value = "l") Integer l) throws IOException {
+    if (k == null) k = 2;
+    if (l == null) l = 2;
+    DataPrivacy dataPrivacy = new DataPrivacy(patientRepo.findAll());
+    ARXResult result = dataPrivacy.getARXResult(k, l);
+
+    WorkbookWriter writer = WorkbookWriter.openXLSX();
+    Iterator<String[]> iterator = result.getOutput(false).iterator();
+    while (iterator.hasNext()) {
+      List<String> list = Arrays.asList(iterator.next());
+      writer.addRow(list.get(0), list.get(1), list.get(2), list.get(3),
+          list.get(4), list.get(5));
+    }
+
+    String fileName = k + "anonymity_" + l + "diversity_"
+        + TimeStamp.simpleDateTime() + ".xls";
+    InputStream is = new FileInputStream(writer.save(fileName));
+    IOUtils.copy(is, response.getOutputStream());
+    response.setHeader("Content-disposition",
+        "attachment; filename=" + fileName);
+    response.flushBuffer();
+    RubyFile.delete(fileName);
   }
 
 }
