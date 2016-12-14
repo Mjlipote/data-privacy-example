@@ -97,8 +97,8 @@ public class DataPrivacy {
     config.addCriterion(new KAnonymity(k));
     config.addCriterion(new DistinctLDiversity("disease", l));
     config.addCriterion(
-        new HierarchicalDistanceTCloseness("disease", 0.7d, disease));
-    config.setMaxOutliers(0.7d);
+        new HierarchicalDistanceTCloseness("disease", 0.5d, disease));
+    config.setMaxOutliers(0.5d);
     config.setMetric(Metric.createEntropyMetric());
     return anonymizer.anonymize(data, config);
   }
